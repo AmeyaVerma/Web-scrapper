@@ -46,12 +46,17 @@ genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 def scrape_page(url):
-    """Extracts raw markdown using Firecrawl."""
+    """Extracts raw markdown using Firecrawl with the updated V1 API format."""
     headers = {
         "Authorization": f"Bearer {FIRECRAWL_API_KEY}",
         "Content-Type": "application/json"
     }
-    payload = {"url": url, "pageOptions": {"onlyMainContent": True}}
+    # NEW FORMAT FIX:
+    payload = {
+        "url": url, 
+        "formats": ["markdown"], 
+        "onlyMainContent": True
+    }
     
     try:
         response = requests.post("https://api.firecrawl.dev/v1/scrape", headers=headers, json=payload)
