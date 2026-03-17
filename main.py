@@ -3,7 +3,7 @@ import json
 import smtplib
 from email.message import EmailMessage
 import requests
-import google.generativeai as genai
+from google import genai
 
 # --- CONFIGURATION & SECRETS ---
 APPS_SCRIPT_URL = os.getenv("APPS_SCRIPT_URL")
@@ -11,6 +11,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
 EMAIL_SENDER = os.getenv("EMAIL_SENDER")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+GOOGLE_SHEET_URL = os.getenv("GOOGLE_SHEET_URL", "Link not provided in secrets.")
 EMAIL_RECEIVER = "ameyaverma1977@gmail.com"
 
 # --- TARGET DATA ---
@@ -36,14 +37,13 @@ TARGET_COMPANIES = {
     "Nike": "https://jobs.nike.com"
 }
 
-# --- TEMPORARY TESTING FILTERS (Broadened to ensure we catch jobs for the test) ---
+# --- TEMPORARY TESTING FILTERS ---
 TARGET_EXPERIENCE = "Any experience level from 0 to 5 years."
 TARGET_ROLES = "Any tech, engineering, data, or software role."
 TARGET_LOCATION = "Any location."
 
-# Setup Gemini
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Setup New Gemini Client
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 def scrape_page(url):
     """Extracts raw markdown using Firecrawl with the updated V1 API format."""
@@ -51,7 +51,6 @@ def scrape_page(url):
         "Authorization": f"Bearer {FIRECRAWL_API_KEY}",
         "Content-Type": "application/json"
     }
-    # NEW FORMAT FIX:
     payload = {
         "url": url, 
         "formats": ["markdown"], 
@@ -70,7 +69,7 @@ def scrape_page(url):
         return ""
 
 def extract_jobs_with_ai(markdown_content):
-    """Filters markdown for relevant tech jobs."""
+    """Filters markdown for relevant tech jobs using the new GenAI SDK."""
     prompt = f"""
     You are an expert tech recruiter. Review the following career page markdown.
     Extract job postings that match these criteria:
@@ -86,8 +85,12 @@ def extract_jobs_with_ai(markdown_content):
     {markdown_content}
     """
     try:
-        response = model.generate_content(prompt)
-        # Clean up the response to ensure it's valid JSON
+        # NEW SDK GENERATION CALL
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=prompt
+        )
+        
         json_str = response.text.strip()
         if json_str.startswith("```json"):
             json_str = json_str.removeprefix("```json").removesuffix("```").strip()
@@ -113,16 +116,19 @@ def update_google_sheet(all_company_jobs):
         print(f"Failed to connect to Google Webhook: {e}")
 
 def send_notification_email():
-    """Emails you when the process is done."""
+    """Emails you when the process is done, including the sheet link."""
     msg = EmailMessage()
     msg['Subject'] = "Your Daily Tech Job Scraper Update is Ready!"
     msg['From'] = EMAIL_SENDER
     msg['To'] = EMAIL_RECEIVER
     
-    body = """Hello,
+    body = f"""Hello,
 
 Your AI job scraper has finished checking all the company career pages.
-Open your Google Sheet to view the updated list and apply for roles!
+Open your Google Sheet below to view the updated list and apply for roles!
+
+Access your database here: 
+{GOOGLE_SHEET_URL}
 
 Happy hunting!
 """
