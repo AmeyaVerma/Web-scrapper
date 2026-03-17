@@ -35,12 +35,13 @@ TARGET_COMPANIES = {
     "Razorpay": "https://razorpay.com/jobs",
     "CRED": "https://careers.cred.club",
     "Nike": "https://jobs.nike.com"
+    "Conga": "https://conga.com/careers#section-greenhouse"
 }
 
-# --- TEMPORARY TESTING FILTERS ---
-TARGET_EXPERIENCE = "Any experience level from 0 to 5 years."
-TARGET_ROLES = "Any tech, engineering, data, or software role."
-TARGET_LOCATION = "Any location."
+# --- YOUR TARGET REQUIREMENTS ---
+TARGET_EXPERIENCE = "Fresher, Internship, New graduate, or exactly 1 year of experience."
+TARGET_ROLES = "Data Science, Data Analyst, Data Handling, Machine Learning, Artificial Intelligence, Software Development, AWS, Power BI, or Tableau."
+TARGET_LOCATION = "Hybrid, Onsite, Remote anywhere in India, or Remote anywhere in the world."
 
 # Setup New Gemini Client
 client = genai.Client(api_key=GEMINI_API_KEY)
