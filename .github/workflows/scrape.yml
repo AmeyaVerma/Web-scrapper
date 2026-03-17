@@ -9,7 +9,7 @@ jobs:
   run-scraper:
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # <--- This fixes the warning!
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Fixes the Node.js 20 warning
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.12' # Fixes the Python 3.10 warning
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -29,4 +29,5 @@ jobs:
           FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
           EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          GOOGLE_SHEET_URL: ${{ secrets.GOOGLE_SHEET_URL }} # Passes the sheet link to your email
         run: python main.py
