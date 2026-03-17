@@ -87,7 +87,7 @@ def extract_jobs_with_ai(markdown_content):
     try:
         # NEW SDK GENERATION CALL
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.5-flash',
             contents=prompt
         )
         
