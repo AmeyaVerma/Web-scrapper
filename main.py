@@ -34,7 +34,7 @@ TARGET_COMPANIES = {
     "Juspay": "https://juspay.io/careers",
     "Razorpay": "https://razorpay.com/jobs",
     "CRED": "https://careers.cred.club",
-    "Nike": "https://jobs.nike.com"
+    "Nike": "https://jobs.nike.com",
     "Conga": "https://conga.com/careers#section-greenhouse"
 }
 
